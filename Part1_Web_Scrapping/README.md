@@ -1,37 +1,27 @@
-# NASDAQ Company Profitability Impact
+# Crysis impact on coporate profitability
 
-![001_NQ.jpg](attachment:001_NQ.jpg)
+![001_NQ.jpg](Images/001_NQ.jpg)
 
 <font size = 6>Welcome to this new project!</font>
 
 Today we will study the **impact of the current crysis on given companies**. The profit variation will be the endog variable and will be explained with foundamentals observations.\
-Share price variation won't be added because predicting model has to work on unlisted companies. In other words, the work will only use public quaterly reports, which is mandatory for US listed company and must generalize well on every US companies with a minimal size/capital.
+Share price variation won't be added because predicting model has to work on unlisted companies. In other words, the work will only use public quarterly reports, which is mandatory for US listed company but models must generalize well on every companies with a minimal size/capital.
 
 To do that, financials data will be get by web-scraping.\
-Quaterly reports are only available on listed companies.\
 **Companies included in NASDAQ** index are more than 3000 and **will firstly be studied**. More companies may be added if necessary.
 
-Quaterly reports are scraped in totally free **Yahoo finance** instead of payant EDGAR API from SEC.
+Quarterly reports are scraped in totally free **Yahoo finance** instead of payant EDGAR API from SEC.
 
 This part is only about web-scraping, which is dense enough.\
-Steps in this part will be:
-+ Get NASDAQ companies list with corresponding symbol
-+ Get general information on each companies (sector,size,adress...)
-+ Get quaterly report on each companies
+Followed steps will be:\
+**1) Get NASDAQ companies list with corresponding SYMBOL**\
+**2) Get general information on each companies thanks to the SYMBOL(sector,size,adress...)**\
+**3) Get quarterly report on each companies**
 
-
+\
 I'm really happy to share this work with you...let's see what we can get! I wish you a good reading!
 
-
 First let's import necessary librairies:
-
-
-```python
-%reset
-```
-
-    Once deleted, variables cannot be recovered. Proceed (y/[n])? y
-    
 
 
 ```python
@@ -56,13 +46,21 @@ pd.set_option('display.max_columns',150)
 
 # 1 - NASDAQ list
 
+Get all companies listed in NASDAQ and corresponding SYMBOL is the first thing to do. Fortunately, theses informations are gathered in one website easy to scrap:\
+[advfn website](https://www.advfn.com/nasdaq/nasdaq.asp?companies=A) is the perfect solution.
+
+
+![002_NQ.JPG](Images/002_NQ.JPG)
+
+Every companies are listed in alphabetical order, so there are 26 pages to scrap, one for each letter. **BeautifulSoup is the only necessary librairy** beacause no JavaScript is exectued until to reach the desired data in the html page. The screenshot below show the code page, **no script tag can be see**. That's why this website seems easy to scrap.
+
+![0021_NQ.JPG](Images/0021_NQ.JPG)
+
+The equity and its SYMBOL can be located with class name **"ts0"** or **"ts1"** corresponding to the row parity. 'ts0' is pair row and 'ts1' is unpair, it probably helps to apply different colors to get a better readable table. **We want to scrap both 'ts0' and 'ts1', no matter parity.** That is why a unique class name reseach will be made on all tag including 'ts'. Doing this is easy **using re.compile()** function (see below,line 23).
+
+As always **temporization** is made between each requests to **avoid server issue**.
+
 ## 1.1 - Functions
-
-[advfn website](https://www.advfn.com/nasdaq/nasdaq.asp?companies=A) is used to scrap NASDAQ list.
-
-![002_NQ.JPG](attachment:002_NQ.JPG)
-
-BeautifulSoup is the only necessary librairy. Every companies are listed in alphabetical order, so there are 26 pages to scrap, one for each letter.
 
 
 ```python
@@ -110,7 +108,7 @@ def NASDAQ_companies_name(pages):
 
 ## 1.2 - Extraction
 
-Extraction is made with theses lines below, pages are called by letters in pages list. Scraping theses pages is very quick, it takes between 2 and 5 minutes.
+Extraction is made with theses lines below, pages are called by letters in pages list. **Scraping theses pages is very quick, it takes between 2 and 5 minutes.**
 
 
 ```python
@@ -182,81 +180,23 @@ df_NASDAQ_Name.head()
 df_NASDAQ_Name.to_csv('NASDAQ_Name.csv',index=None)
 ```
 
-
-```python
-df_NASDAQ_Name = pd.read_csv('NASDAQ_Name.csv')
-df_NASDAQ_Name.head()
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Name</th>
-      <th>Symbol</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>A. Schulman</td>
-      <td>SHLM</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>A.c. Moore Arts Crafts</td>
-      <td>ACMR</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>A.d.a.m. Inc.</td>
-      <td>ADAM</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Aaipharma</td>
-      <td>AAII</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Aaon</td>
-      <td>AAON</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-Well done, the first dataset is made. It doesn't included meaningful informations for now but symbol will be used to get some.
+Well done, the first dataset is made. It doesn't included meaningful informations for now but SYMBOL will be used in the second part to get more specific stuffs.
 
 # 2 - NASDAQ COMPANIES GENERAL INFOS
 
+Get general information on each companies thanks to the SYMBOL(sector,size,adress...) is the new step we have to complete. The same website is used, but the code page has changed.\
+[advfn website](https://ih.advfn.com/stock-market/NASDAQ/a-schulman-inc-delisted-SHLM/financials)
+
+
+![003_NQ.JPG](Images/003_NQ.JPG)
+
+Javascript is used, **script tag are widely called** in the bottom of the screenshot (framed in red). But **data we want to get are displayed before** (underlined in blue), so BeautifulSoup can still do the job.
+
+![0031_NQ.JPG](Images/0031_NQ.JPG)
+
+Get the needed outcome implies a little bit more complicated function. JSON format is used line 77.
+
 ## 2.1 - Functions
-
-
-[advfn website](https://ih.advfn.com/stock-market/NASDAQ/a-schulman-inc-delisted-SHLM/financials) is still used.
-
-![003_NQ.JPG](attachment:003_NQ.JPG)
-
-Get the needed outcome implies a little bit more complicated function. JSON is used and make it more clear.
 
 
 ```python
@@ -423,17 +363,17 @@ def NASDAQ_companies_info(symbols):
 
 ## 2.2 - Extraction
 
-This function run with a list of companies symbol found with NASDAQ_companies_name.
-Calling all symbols in one single list is a bad way to get needed data. About 3000 web pages are going to be scraped, doing this in one time is highly risky because of communication with server. Sometimes and for no logical reason, communication can be broke down.\
-This type of errors might occurs and generate the exception below: 
+This function run with a list of equity SYMBOL found in NASDAQ_companies_name.\
+Calling all SYMBOLS **in one single list is a bad way to get needed data**. About 3000 web pages are going to be scraped, doing this in one time is highly risky because of communication with the server. **Sometimes and for no logical reasons, communication can be broke down.**\
+This type of errors might occurs and generate the exception below:
 
-![006_NQ.JPG](attachment:006_NQ.JPG)
+![006_NQ.JPG](Images/006_NQ.JPG)
 
-SSLError appeared certainly because of TCP protocol error with the server. This phenomenon has nothing to do with our created function, it was caused by the internet connection or by the server itself.
+SSLError appeared certainly because of TCP protocol error with the server. This phenomenon has **nothing to do with our created function**, it was caused by the internet connection or by the server itself.
 
-Because of the high number of web page to scrap, the safest way to get all we want is to batch the symbol list. Regarding to the bad current web connection quality, NASDAQ_companies_info will be run with 30 batch of 100 companies.
+Because of the high number of web page to scrap, the safest way to get all we want is to **batch the SYMBOL list**. Regarding to the bad current web connection quality, NASDAQ_companies_info will be run with 30 batch of 100 companies.
 
-One request take between 6 and 9 seconds (partially due the web connection), 3000 requests must be made, so 5 to 8 hours are needed on this step.
+One request take between 6 and 9 seconds (partially due the web connection), 3000 requests must be made, so **5 to 8 hours are needed in this step**.
 
 
 ```python
@@ -634,20 +574,25 @@ df_Companies_info.head()
 
 # 3 - Annual Report NASDAQ
 
-## 3.1 - Functions
-
-Getting quaterly report clearly is the most complicated step. Two ways are possible:
+Get quarterly report on each companies is the last but not least step.\
+Two ways are possible:
 + SEC EDGAR API (payant)
 + Yahoo Finance (free)
 
-[Yahoo Finance](https://fr.finance.yahoo.com/quote/AAON/financials?p=AAON) was chosen but some quaterly reports are missing.
+So [Yahoo Finance](https://fr.finance.yahoo.com/quote/AAON/financials?p=AAON) will be used and getting reports is way more complicated than previous part.
 
-![004_NQ.JPG](attachment:004_NQ.JPG)
+![004_NQ.JPG](Images/004_NQ.JPG)
 
 **Financials elements and quaterly buttons must be clicked on to get the needed data.**\
 Beautiful Soup can't be used in this case because of JavaScript routine. **The URL adress is the same between annual and quaterly report**, by defaut annual data is displayed and that's exactly what we don't want.\
-Simulate quaterly button click is needed, **Selenium package can do this**. Scroll down also must be done to show the desired button in the web page and start JavaScript routine. That's why the command below is writen line 85:\
+\
+Simulate quaterly button click is needed, **Selenium package can do this**. Scroll down must be done to show the desired button in the web page and start JavaScript routine. That's why the command below is writen line 142:\
     browser.execute_script("window.scrollTo(0, 200)")
+    
+    
+**If too much quarterly reports are missing, other equity all around the world will be find to complete our database.**
+
+## 3.1 - Functions
 
 
 ```python
@@ -776,7 +721,7 @@ def Get_Companies_Reports(list_symbol,time_sleep=1):
         try:
             ###################### Tempo before requesting ######################
             global_cpt+=1
-            sleep(randint(3,6))
+            sleep(randint(2,3))
 
             url = 'https://uk.finance.yahoo.com/quote/'+symbol+'/financials?p='+symbol
             browser.get(url)
@@ -833,7 +778,7 @@ def Get_Companies_Reports(list_symbol,time_sleep=1):
     return df_All_Reports,L_missing_report
 ```
 
-The function globally make steps described below:
+No need to deeply understand the function, it globally make steps described below:
 + Open a Firefox browser and go to the Yahoo finance desired page                   **(line 114 to 130)**
 + Click ok in the cookies consent box, scroll down and click on the quaterly button **(line 131 to 150)**
 + Scrap the report data                                                             **(line 153 to 154)**
@@ -854,10 +799,13 @@ l_report_tmp = []
 l_missing_report = []
 for i in np.arange(df_NASDAQ_Name.shape[0]//threshold+1):
     NASDAQ_List_Symbol =  list(df_NASDAQ_Name['Symbol'])[i*threshold:(i+1)*threshold]
-    NASDAQ_Report,l_missing = Get_Companies_Reports(NASDAQ_List_Symbol,time_sleep=15)
+    NASDAQ_Report,l_missing = Get_Companies_Reports(NASDAQ_List_Symbol,time_sleep=12)
     l_report_tmp.append(NASDAQ_Report)
     l_missing_report = l_missing_report + l_missing
 ```
+
+    Request 96 >>> Frequency: 17.98683 s/request
+    
 
 
 ```python
@@ -871,13 +819,699 @@ print('Companies Scraped : {}\n>>> Info obtained : {}\n>>> Info Missing  : {}'.f
                                                                                     len(l_missing_report)))
 ```
 
+    Companies Scraped : 2996
+    >>> Info obtained : 1318
+    >>> Info Missing  : 1678
+    
+
 
 ```python
 df_Companies_report.head()
 ```
 
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Total_revenueQM0</th>
+      <th>Total_revenueQM1</th>
+      <th>Total_revenueQM2</th>
+      <th>Total_revenueQM3</th>
+      <th>Cost_of_revenueQM0</th>
+      <th>Cost_of_revenueQM1</th>
+      <th>Cost_of_revenueQM2</th>
+      <th>Cost_of_revenueQM3</th>
+      <th>Gross_profitQM0</th>
+      <th>Gross_profitQM1</th>
+      <th>Gross_profitQM2</th>
+      <th>Gross_profitQM3</th>
+      <th>Selling_general_and_adminQM0</th>
+      <th>Selling_general_and_adminQM1</th>
+      <th>Selling_general_and_adminQM2</th>
+      <th>Selling_general_and_adminQM3</th>
+      <th>Research_developmentQM0</th>
+      <th>Research_developmentQM1</th>
+      <th>Research_developmentQM2</th>
+      <th>Research_developmentQM3</th>
+      <th>Total_operating_expensesQM0</th>
+      <th>Total_operating_expensesQM1</th>
+      <th>Total_operating_expensesQM2</th>
+      <th>Total_operating_expensesQM3</th>
+      <th>Operating_income_or_lossQM0</th>
+      <th>Operating_income_or_lossQM1</th>
+      <th>Operating_income_or_lossQM2</th>
+      <th>Operating_income_or_lossQM3</th>
+      <th>Interest_expenseQM0</th>
+      <th>Interest_expenseQM1</th>
+      <th>Interest_expenseQM2</th>
+      <th>Interest_expenseQM3</th>
+      <th>Total_other_incomeQM0</th>
+      <th>Total_other_incomeQM1</th>
+      <th>Total_other_incomeQM2</th>
+      <th>Total_other_incomeQM3</th>
+      <th>Income_before_taxQM0</th>
+      <th>Income_before_taxQM1</th>
+      <th>Income_before_taxQM2</th>
+      <th>Income_before_taxQM3</th>
+      <th>Income_tax_expenseQM0</th>
+      <th>Income_tax_expenseQM1</th>
+      <th>Income_tax_expenseQM2</th>
+      <th>Income_tax_expenseQM3</th>
+      <th>Net_incomeQM0</th>
+      <th>Net_incomeQM1</th>
+      <th>Net_incomeQM2</th>
+      <th>Net_incomeQM3</th>
+      <th>Total_revenueQM4</th>
+      <th>Cost_of_revenueQM4</th>
+      <th>Gross_profitQM4</th>
+      <th>Selling_general_and_adminQM4</th>
+      <th>Research_developmentQM4</th>
+      <th>Total_operating_expensesQM4</th>
+      <th>Operating_income_or_lossQM4</th>
+      <th>Interest_expenseQM4</th>
+      <th>Total_other_incomeQM4</th>
+      <th>Income_before_taxQM4</th>
+      <th>Income_tax_expenseQM4</th>
+      <th>Net_incomeQM4</th>
+      <th>Total_revenueQM5</th>
+      <th>Cost_of_revenueQM5</th>
+      <th>Gross_profitQM5</th>
+      <th>Selling_general_and_adminQM5</th>
+      <th>Research_developmentQM5</th>
+      <th>Total_operating_expensesQM5</th>
+      <th>Operating_income_or_lossQM5</th>
+      <th>Interest_expenseQM5</th>
+      <th>Total_other_incomeQM5</th>
+      <th>Income_before_taxQM5</th>
+      <th>Income_tax_expenseQM5</th>
+      <th>Net_incomeQM5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ACMR</td>
+      <td>24,348</td>
+      <td>24,608</td>
+      <td>33,427</td>
+      <td>29,010</td>
+      <td>14,120</td>
+      <td>12,165</td>
+      <td>17,173</td>
+      <td>15,879</td>
+      <td>10,228</td>
+      <td>12,443</td>
+      <td>16,254</td>
+      <td>13,131</td>
+      <td>5,333</td>
+      <td>5,292</td>
+      <td>5,732</td>
+      <td>5,129</td>
+      <td>3,677</td>
+      <td>3,302</td>
+      <td>3,492</td>
+      <td>3,341</td>
+      <td>9,010</td>
+      <td>8,594</td>
+      <td>9,224</td>
+      <td>8,470</td>
+      <td>1,218</td>
+      <td>3,849</td>
+      <td>7,030</td>
+      <td>4,661</td>
+      <td>111</td>
+      <td>207</td>
+      <td>205</td>
+      <td>194</td>
+      <td>825</td>
+      <td>-831</td>
+      <td>1,841</td>
+      <td>696</td>
+      <td>2,267</td>
+      <td>3,016</td>
+      <td>8,761</td>
+      <td>5,187</td>
+      <td>304</td>
+      <td>-1,185</td>
+      <td>-328</td>
+      <td>876</td>
+      <td>1,705</td>
+      <td>3,944</td>
+      <td>8,782</td>
+      <td>4,311</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>AAON</td>
+      <td>137,483</td>
+      <td>122,574</td>
+      <td>113,500</td>
+      <td>119,437</td>
+      <td>94,536</td>
+      <td>86,502</td>
+      <td>86,115</td>
+      <td>89,262</td>
+      <td>42,947</td>
+      <td>36,072</td>
+      <td>27,385</td>
+      <td>30,175</td>
+      <td>14,278</td>
+      <td>14,051</td>
+      <td>12,476</td>
+      <td>12,338</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>14,740</td>
+      <td>14,483</td>
+      <td>12,876</td>
+      <td>12,719</td>
+      <td>28,207</td>
+      <td>21,589</td>
+      <td>14,509</td>
+      <td>17,456</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>-439</td>
+      <td>-189</td>
+      <td>-131</td>
+      <td>-751</td>
+      <td>27,829</td>
+      <td>21,417</td>
+      <td>14,387</td>
+      <td>16,736</td>
+      <td>5,976</td>
+      <td>5,396</td>
+      <td>560</td>
+      <td>3,775</td>
+      <td>21,853</td>
+      <td>16,021</td>
+      <td>13,827</td>
+      <td>12,961</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ABMD</td>
+      <td>206,658</td>
+      <td>221,584</td>
+      <td>204,974</td>
+      <td>207,666</td>
+      <td>39,368</td>
+      <td>39,996</td>
+      <td>34,867</td>
+      <td>37,073</td>
+      <td>167,290</td>
+      <td>181,588</td>
+      <td>170,107</td>
+      <td>170,593</td>
+      <td>83,892</td>
+      <td>85,674</td>
+      <td>85,956</td>
+      <td>86,078</td>
+      <td>25,346</td>
+      <td>25,655</td>
+      <td>23,969</td>
+      <td>23,790</td>
+      <td>109,238</td>
+      <td>111,329</td>
+      <td>109,925</td>
+      <td>109,868</td>
+      <td>58,052</td>
+      <td>70,259</td>
+      <td>60,182</td>
+      <td>60,725</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>-18,739</td>
+      <td>26,757</td>
+      <td>-42,824</td>
+      <td>42,413</td>
+      <td>39,313</td>
+      <td>97,016</td>
+      <td>17,358</td>
+      <td>103,138</td>
+      <td>7,515</td>
+      <td>27,799</td>
+      <td>4,287</td>
+      <td>14,215</td>
+      <td>31,798</td>
+      <td>69,217</td>
+      <td>13,071</td>
+      <td>88,923</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>AXAS</td>
+      <td>15,726</td>
+      <td>28,276</td>
+      <td>31,536</td>
+      <td>34,820</td>
+      <td>16,401</td>
+      <td>23,260</td>
+      <td>20,747</td>
+      <td>23,180</td>
+      <td>-675</td>
+      <td>5,016</td>
+      <td>10,789</td>
+      <td>11,640</td>
+      <td>2,447</td>
+      <td>3,135</td>
+      <td>2,736</td>
+      <td>2,705</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2,447</td>
+      <td>3,135</td>
+      <td>2,736</td>
+      <td>2,705</td>
+      <td>-3,122</td>
+      <td>1,881</td>
+      <td>8,053</td>
+      <td>8,935</td>
+      <td>4,386</td>
+      <td>3,629</td>
+      <td>2,951</td>
+      <td>2,765</td>
+      <td>49,071</td>
+      <td>-66,410</td>
+      <td>12,081</td>
+      <td>5,636</td>
+      <td>41,443</td>
+      <td>-68,268</td>
+      <td>17,041</td>
+      <td>11,678</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>41,443</td>
+      <td>-68,268</td>
+      <td>17,041</td>
+      <td>11,678</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ACTG</td>
+      <td>3,815</td>
+      <td>688</td>
+      <td>1,711</td>
+      <td>5,460</td>
+      <td>2,506</td>
+      <td>3,794</td>
+      <td>2,186</td>
+      <td>5,671</td>
+      <td>1,309</td>
+      <td>-3,106</td>
+      <td>-475</td>
+      <td>-211</td>
+      <td>4,878</td>
+      <td>4,201</td>
+      <td>4,670</td>
+      <td>3,810</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4,878</td>
+      <td>4,201</td>
+      <td>4,670</td>
+      <td>3,810</td>
+      <td>-3,569</td>
+      <td>-7,307</td>
+      <td>-5,145</td>
+      <td>-4,021</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>-9,595</td>
+      <td>3,712</td>
+      <td>-3,181</td>
+      <td>-2,857</td>
+      <td>-12,629</td>
+      <td>-1,513</td>
+      <td>-7,608</td>
+      <td>-5,748</td>
+      <td>-1,338</td>
+      <td>-2,147</td>
+      <td>0</td>
+      <td>9</td>
+      <td>-12,185</td>
+      <td>327</td>
+      <td>-7,608</td>
+      <td>-5,757</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+df_Companies_report[~df_Companies_report['Income_tax_expenseQM5'].isna()]
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Total_revenueQM0</th>
+      <th>Total_revenueQM1</th>
+      <th>Total_revenueQM2</th>
+      <th>Total_revenueQM3</th>
+      <th>Cost_of_revenueQM0</th>
+      <th>Cost_of_revenueQM1</th>
+      <th>Cost_of_revenueQM2</th>
+      <th>Cost_of_revenueQM3</th>
+      <th>Gross_profitQM0</th>
+      <th>Gross_profitQM1</th>
+      <th>Gross_profitQM2</th>
+      <th>Gross_profitQM3</th>
+      <th>Selling_general_and_adminQM0</th>
+      <th>Selling_general_and_adminQM1</th>
+      <th>Selling_general_and_adminQM2</th>
+      <th>Selling_general_and_adminQM3</th>
+      <th>Research_developmentQM0</th>
+      <th>Research_developmentQM1</th>
+      <th>Research_developmentQM2</th>
+      <th>Research_developmentQM3</th>
+      <th>Total_operating_expensesQM0</th>
+      <th>Total_operating_expensesQM1</th>
+      <th>Total_operating_expensesQM2</th>
+      <th>Total_operating_expensesQM3</th>
+      <th>Operating_income_or_lossQM0</th>
+      <th>Operating_income_or_lossQM1</th>
+      <th>Operating_income_or_lossQM2</th>
+      <th>Operating_income_or_lossQM3</th>
+      <th>Interest_expenseQM0</th>
+      <th>Interest_expenseQM1</th>
+      <th>Interest_expenseQM2</th>
+      <th>Interest_expenseQM3</th>
+      <th>Total_other_incomeQM0</th>
+      <th>Total_other_incomeQM1</th>
+      <th>Total_other_incomeQM2</th>
+      <th>Total_other_incomeQM3</th>
+      <th>Income_before_taxQM0</th>
+      <th>Income_before_taxQM1</th>
+      <th>Income_before_taxQM2</th>
+      <th>Income_before_taxQM3</th>
+      <th>Income_tax_expenseQM0</th>
+      <th>Income_tax_expenseQM1</th>
+      <th>Income_tax_expenseQM2</th>
+      <th>Income_tax_expenseQM3</th>
+      <th>Net_incomeQM0</th>
+      <th>Net_incomeQM1</th>
+      <th>Net_incomeQM2</th>
+      <th>Net_incomeQM3</th>
+      <th>Total_revenueQM4</th>
+      <th>Cost_of_revenueQM4</th>
+      <th>Gross_profitQM4</th>
+      <th>Selling_general_and_adminQM4</th>
+      <th>Research_developmentQM4</th>
+      <th>Total_operating_expensesQM4</th>
+      <th>Operating_income_or_lossQM4</th>
+      <th>Interest_expenseQM4</th>
+      <th>Total_other_incomeQM4</th>
+      <th>Income_before_taxQM4</th>
+      <th>Income_tax_expenseQM4</th>
+      <th>Net_incomeQM4</th>
+      <th>Total_revenueQM5</th>
+      <th>Cost_of_revenueQM5</th>
+      <th>Gross_profitQM5</th>
+      <th>Selling_general_and_adminQM5</th>
+      <th>Research_developmentQM5</th>
+      <th>Total_operating_expensesQM5</th>
+      <th>Operating_income_or_lossQM5</th>
+      <th>Interest_expenseQM5</th>
+      <th>Total_other_incomeQM5</th>
+      <th>Income_before_taxQM5</th>
+      <th>Income_tax_expenseQM5</th>
+      <th>Net_incomeQM5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>510</th>
+      <td>HCCI</td>
+      <td>74,110</td>
+      <td>101,479</td>
+      <td>131,118</td>
+      <td>99,172</td>
+      <td>72,293</td>
+      <td>83,250</td>
+      <td>108,154</td>
+      <td>80,116</td>
+      <td>1,817</td>
+      <td>18,229</td>
+      <td>22,964</td>
+      <td>19,056</td>
+      <td>11,134</td>
+      <td>11,522</td>
+      <td>15,545</td>
+      <td>11,241</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>9,793</td>
+      <td>17,062</td>
+      <td>32,631</td>
+      <td>16,241</td>
+      <td>-7,976</td>
+      <td>1,167</td>
+      <td>-9,667</td>
+      <td>2,815</td>
+      <td>344</td>
+      <td>214</td>
+      <td>240</td>
+      <td>181</td>
+      <td>5,408</td>
+      <td>5,785</td>
+      <td>7,696</td>
+      <td>5,668</td>
+      <td>-2,912</td>
+      <td>6,738</td>
+      <td>-2,211</td>
+      <td>8,302</td>
+      <td>-254</td>
+      <td>1,447</td>
+      <td>-168</td>
+      <td>2,246</td>
+      <td>-2,658</td>
+      <td>5,291</td>
+      <td>-2,151</td>
+      <td>5,970</td>
+      <td>-</td>
+      <td>80,116</td>
+      <td>-</td>
+      <td>-</td>
+      <td>0</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>2,246</td>
+      <td>-</td>
+      <td>99,238</td>
+      <td>78,849</td>
+      <td>20,389</td>
+      <td>11,042</td>
+      <td>0.0</td>
+      <td>16,617</td>
+      <td>3,772</td>
+      <td>219</td>
+      <td>5,762</td>
+      <td>9,315</td>
+      <td>2,151</td>
+      <td>7,056</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+Only one equity has more than 3 quarter written in yahoo finance, that's why only the 3 first quarter are kept.
+
+
+```python
+df_Companies_report_trunc = df_Companies_report.loc[:,:'Net_incomeQM3']
+df_Companies_report_trunc.to_csv('Companies_report_trunc.csv',index=None)
+```
+
+Our three needed datasets are now scraped!
+
 **Congratulation to have come so far! But that's just the first step in a more complex work.**\
-ETL process will be finished by creating a proper DataBase with SSIS and SQL Server Data Tool.
+\
+Next steps:
++ ETL process and create a proper DataBase with SSIS and SQL Server Data Tool.
++ Data visualisation with TABLEAU
++ Machine Learning & Deep Learning
 
 I hope you enjoyed reading this work.
 
@@ -888,4 +1522,4 @@ If you want to discuss any other projects or just have a chat about data science
 
 See you and have a wonderful day!
 
-![005_NQ.jpg](attachment:005_NQ.jpg)
+![005_NQ.jpg](Images/005_NQ.jpg)
