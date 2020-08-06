@@ -1509,9 +1509,9 @@ Our three needed datasets are now scraped!
 **Congratulation to have come so far! But that's just the first step in a more complex work.**\
 \
 Next steps:
-+ ETL process and create a proper DataBase with SSIS and SQL Server Data Tool.
-+ Data visualisation with TABLEAU
-+ Machine Learning & Deep Learning
++ [Part 2 : ETL process](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part2_ETL_Process)
++ Part 3 : Data visualisation
++ Part 4 : Machine Learning & Deep Learning
 
 I hope you enjoyed reading this work.
 
