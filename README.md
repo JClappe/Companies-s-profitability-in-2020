@@ -2,7 +2,7 @@
 The current crysis **hardly impact worldwide companies**, some are more affected than others. As an investor, one important question has to be asked:\
 **What are bests features for company financial robustness in 2020?**\
 \
-**In this project we will get some insights to answer this very crucial question.** This work doesn't pretend to be exhaustive, it just **provide an overview on the subject** which is really complex. Deeper study has still to be done to increase outcome quality, keep in mind that what we want is a **professionnal work with pratical and simple informations to help making investing decision**. Last but not least point : this work has to generalize well on unlisted companies to get an overview on all the economic system, that's why only corporate fundamentals will be studied.\
+**In this project we will get some insights to answer this very crucial question.** This work doesn't pretend to be exhaustive, it just **provide an overview on the subject** which is really complex. Deeper study has still to be done to increase outcome quality, keep in mind that what we want is a **professionnal work with pratical and simple informations to help making investing decision**. Last but not least point : this work has to generalize well on unlisted companies to get an overview on all the economic system, that's why only corporate fundamentals will be studied.
 
 Differents parts will be folowed:
 * [Part 1 : Web Scraping](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part1_Web_Scrapping)
