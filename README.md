@@ -1,4 +1,4 @@
-# Companies profitability in 2020
+# Corporate profitability in 2020
 The current crysis **hardly impact worldwide companies**, some are more affected than others. As an investor, one important question has to be asked:\
 **What are bests features for company financial robustness in 2020?**\
 \
