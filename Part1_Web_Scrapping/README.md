@@ -1510,7 +1510,7 @@ Our three needed datasets are now scraped!
 \
 Next steps:
 + [Part 2 : ETL process](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part2_ETL_Process)
-+ Part 3 : Data visualisation
++ [Part 3 : Data visualisation](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part3_Data_Visualisation)
 + Part 4 : Machine Learning & Deep Learning
 
 I hope you enjoyed reading this work.
