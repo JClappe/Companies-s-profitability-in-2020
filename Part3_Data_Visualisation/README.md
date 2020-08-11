@@ -8,8 +8,8 @@ Today we will study the **impact of the current crysis on given companies**. The
 Share price variation won't be added because predicting model has to work on unlisted companies. In other words, the work will only use public quaterly reports, which is mandatory for US listed company.
 
 To do that, four point are followed:
-+ Part 1: Web-Scraping to get financials data 
-+ Part 2: ETL Process to stored data in a new database
++ [Part 1: Web-Scraping](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part1_Web_Scrapping) to get financials data 
++ [Part 2: ETL Process](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part2_ETL_Process) to stored data in a new database
 + Part 3: Data Visualisation with TABLEAU to find good insights
 + Part 4: Machine Learning for predicting models
 
@@ -6451,6 +6451,12 @@ Another point can be noted, **the crysis is too recent to get proper feedbacks**
 
 **Congratulation to have come so far!**\
 Data visualisation in TABLEAU is now finished, the next step is machine learning to implement predicting model.
+
+Here you can find the summary:
++ [Part 1: Web-Scraping](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part1_Web_Scrapping) 
++ [Part 2: ETL Process](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part2_ETL_Process)
++ Part 3: Data Visualisation
++ Part 4: Machine Learning
 
 I hope you enjoyed reading this work.
 
