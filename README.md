@@ -7,7 +7,7 @@ The current crysis **hardly impact worldwide companies**, some are more affected
 Differents parts will be folowed:
 * [Part 1 : Web Scraping](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part1_Web_Scrapping)
 * [Part 2 : ETL Process](https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part2_ETL_Process)
-* Part 3 : Data Visualisation published soon...
+* [Part 3 : Data Visualisation] (https://github.com/JClappe/Corporates_profitability_2020/tree/master/Part3_Data_Visualisation)
 * Part 4 : Machine Learning published soon...
 
 
